@@ -1,0 +1,27 @@
+DS
+dynamic graph
+dataset을 수집할 수 있나?
+의미있는 정보가 뭐가있고 어떻게 발견하는지??
+
+-direction(방향성 가짐?)
+트위터는 일방적으로 follow가능 방향성 있음
+
+-weight(가중치)
+-degree(in & out)
+reachable 한가?
+
+2차원 배열로 표현(static)
+linked list
+dynamic은 어떻게 표현?
+그래프로부터 어떤 정보를 이해할 수 있을까?
+
+-serach
+pahth나 connec의 유무
+shortest path 보통 다익스트라 쓰는데 dynamic graph의 경우 어떻게 쓸까??
+
+graph를 선택 동기, 이러이런걸 해보면 좋겠다
+***graph로 만들 dataset찾기
+
+지하철??
+축구?야구?
+영화?
