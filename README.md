@@ -1,4 +1,4 @@
-# java
+# DS
 this is a data structure
 github repository
 Choose graph, dataset
