@@ -1,11 +1,12 @@
 package java;
 
-public class Main {
+import org.json.simple.parser.ParseException;
 
-	public static void main(String[] args) {
-		System.out.println("Hi");
-		System.out.println("Hello");
-		System.out.println("nice to meet to you");
+import javafx.application.Application;
+
+public class Main{
+	
+	public static void main(String[] args) throws ParseException {
+		Application.launch(FxFrame.class, args);
 	}
-
 }
