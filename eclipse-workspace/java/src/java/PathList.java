@@ -5,15 +5,15 @@ public class PathList {
 	private int count =0;
 	
 	private class Destination{
-		private float latitude;	//위도, 33~43
-		private float longtitude;	//경도,	124~132
+		private String latitude;	//위도, 33~43
+		private String longtitude;	//경도,	124~132
 		private String destName;	//여행지 이름
 		
 		//다음 노드를 가리킴
 		private Destination next;	// 다음 여행지 정보
 		
 		//Constructor
-		Destination(String destName, float latitude, float longtitude){
+		Destination(String destName, String latitude, String longtitude){
 			this.next = null;
 			this.destName = destName;
 			this.latitude = latitude;
@@ -21,8 +21,9 @@ public class PathList {
 		}
 		
 	}
+	
 	//출발지 노드 추가
-	public void setStartDestination(String destName, float latitude, float longtitude) {
+	public void setStartDestination(String destName, String latitude, String longtitude) {
 		Destination firstDestination = new Destination(destName, latitude, longtitude);
 		firstDestination.next = head;	//원래의 첫 노드를 다음 2번째 노드로 지정
 		head = firstDestination;
@@ -33,7 +34,7 @@ public class PathList {
 	}
 	
 	//도착지 노드 추가
-	public void setArrivalDestination(String destName, float latitude, float longtitude) {
+	public void setArrivalDestination(String destName, String latitude, String longtitude) {
 		Destination lastDestination = new Destination(destName, latitude, longtitude);
 		if(count == 0)
 			setStartDestination(destName, latitude, longtitude);
@@ -63,7 +64,7 @@ public class PathList {
 	}
 
 	//여행지를 원하는 곳에 추가
-	public void addDestination(int number, String destName, float latitude, float longtitude) {
+	public void addDestination(int number, String destName, String latitude, String longtitude) {
 		if(number==1)
 			setStartDestination(destName, latitude, longtitude);
 		else {
@@ -133,9 +134,20 @@ public class PathList {
 	}
 	
 	//몇번째 방문할 여행지가 무엇인지 얻기
-	public Object getDestination(int number) {
-		Destination dest = createDestination(number-1);
+	public Object getDestinationName(int number) {
+		//Destination dest = createDestination(number-1);
+		Destination dest = createDestination(number);
 		return dest.destName;
+	}
+	
+	public String getDestinationLat(int number) {
+		Destination dest= createDestination(number);
+		return dest.latitude;
+	}
+	
+	public String getDestinationLon(int number) {
+		Destination dest= createDestination(number);
+		return dest.longtitude;
 	}
 	
 	//여행지가 몇 번째 방문할지 조회
