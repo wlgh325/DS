@@ -1,4 +1,5 @@
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -25,32 +26,45 @@ import javafx.stage.Stage;
 
 public class FxFrame extends Application{
 	private String[] searchContents;
-	private String[] roadAddress;
 	private PathList pathlist;
+	private JsonParser parser;
 	
-	//private String[] latlngx;
-	//private String[] latlngy;
+	private GridPane grid;
+	private FlowPane flow;
 	
-	JsonParser parser;
+	private WebView webview;
+	private WebEngine engine;
+	
+	private Button searchButton;
+	private Button startDestinationselectButton;
+	private Button arrivalDesitionationselectButton;
+	private Button destinationselectButton;
+	private Button printRoute;
+	
+	private Text scenetitle;
+	private Label input_dest_label;
+	private TextField searchtext;
+	private ComboBox<String> searchInform;
 	
 	@Override
     public void start(Stage stage) throws Exception {
-        GridPane grid = new GridPane();	//grid panel
-        FlowPane flow = new FlowPane();	//flow panel
-        Button searchButton = new Button("Search");
-        Button startDestinationselectButton = new Button("Select Start Dest");
-        Button arrivalDesitionationselectButton = new Button("Select Arrival Dest");
-        Button DestinationselectButton = new Button("Select mid Dest");
-        Button calculator = new Button("거리 계산");
-        Text scenetitle = new Text("Welcome");
-        Label input_dest_label = new Label("Input destination: ");
-        TextField searchtext = new TextField();
-        ComboBox<String> searchInform = new ComboBox<String>();
+        grid = new GridPane();	//grid panel
+        flow = new FlowPane();	//flow panel
+        searchButton = new Button("Search");
+        startDestinationselectButton = new Button("Select Start Dest");
+        arrivalDesitionationselectButton = new Button("Select Arrival Dest");
+        destinationselectButton = new Button("Select mid Dest");
+        
+        scenetitle = new Text("Welcome");
+        input_dest_label = new Label("Input destination: ");
+        searchtext = new TextField();
+        searchInform = new ComboBox<String>();
+        printRoute = new Button("Print Route");
         
         //title font 지정
         scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
                 
-
+        
 		searchButton.setOnAction(new EventHandler<ActionEvent>() {
 		            @Override
 		            public void handle(ActionEvent event) {
@@ -82,7 +96,7 @@ public class FxFrame extends Application{
             }
         });
 		
-		DestinationselectButton.setOnAction(new EventHandler<ActionEvent>() {
+		destinationselectButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
             	//콤보박스에 선택된 여행지 선택하기	
@@ -91,6 +105,7 @@ public class FxFrame extends Application{
             	int index = searchInform.getSelectionModel().getSelectedIndex();
             	
             	//여행지 노드 생성
+            	//여행지를 추가할때 마다 두번째 여행지로 추가한다
             	pathlist.addDestination(2, parser.getTitle(index), parser.getlatlngy(index) ,parser.getlatlngx(index));
             	pathlist.printTravelRoute();
             }
@@ -110,23 +125,39 @@ public class FxFrame extends Application{
             	pathlist.printTravelRoute();
             }
         });
-
 		
-		calculator.setOnAction(new EventHandler<ActionEvent>() {
+		printRoute.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
             	Algorithm algorithm = new Algorithm(pathlist);
-            	algorithm.distance();
+            	
+            	//해당 dest에서 모든 dest에 해당하는 거리 구하기
+            	for(int i=0; i<pathlist.getcount(); i++) {
+            		algorithm.cal_distance(i);
+            	}
+            	algorithm.optimumRoute();
+            	
+            	PrintMap printmap = new PrintMap(pathlist);
+
+            	try {
+            		printmap.writeJSP();
+					engine.load("http://localhost:8080/");
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				
             }
         });
+		
+		
         //App 제목 설정
-        stage.setTitle("Jeju Map route");
+        stage.setTitle("Map route");
         
         //webview fram set
-        WebView webview = new WebView();
+        webview = new WebView();
         
         //webengine set
-        WebEngine engine = webview.getEngine();
+        engine = webview.getEngine();
         //webpage 불러오기
         engine.load("http://localhost:8080/");
 
@@ -140,9 +171,9 @@ public class FxFrame extends Application{
         flow.getChildren().add(searchtext);;
         flow.getChildren().add(searchButton);
         flow.getChildren().add(startDestinationselectButton);
-        flow.getChildren().add(DestinationselectButton);
+        flow.getChildren().add(destinationselectButton);
         flow.getChildren().add(arrivalDesitionationselectButton);
-        flow.getChildren().add(calculator);
+        flow.getChildren().add(printRoute);
         
         //gridpane 
         //(0,0) 열 방향 2개 병합
@@ -150,7 +181,7 @@ public class FxFrame extends Application{
         grid.add(flow, 0, 1,2,1);
         grid.add(searchInform, 0, 2);
         grid.add(webview, 0, 3,3,1);
-        Scene scene = new Scene(grid, 800, 750);
+        Scene scene = new Scene(grid, 800, 600);
         stage.setScene(scene);
         stage.show();
     }
@@ -189,7 +220,6 @@ public class FxFrame extends Application{
               	parser.Parsing();	//정보들 parsing하기
               	
               	this.searchContents = parser.getTitle();	//combobox에 검색된 목록 넣어주기
-              	this.roadAddress = parser.getAddress();
               	reader.close();
               	
             } else {  // 에러 발생

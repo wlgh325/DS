@@ -18,6 +18,7 @@ public class JsonParser {
 	private String[] latlngx;	//longtitude(경도)
 	private String[] latlngy;	//latitude(위도)
 	
+	
 	//Counstructor
 	public JsonParser() {
 		this.searchContents = new String[MAX_CONTENTS];
@@ -46,7 +47,7 @@ public class JsonParser {
 		latlngx[i] = point.get("x").toString();
 		latlngy[i] = point.get("y").toString();
 		
-		System.out.println("x: " + latlngx[i] + " y: " + latlngy[i]);
+		//System.out.println("x: " + latlngx[i] + " y: " + latlngy[i]);
 	}
 	
 	//검색된 정보들 parsing
@@ -143,4 +144,5 @@ public class JsonParser {
 	public String getlatlngy(int i) {
 		return latlngy[i];
 	}
+	
 }

@@ -1,13 +1,15 @@
+import java.util.ArrayList;
 
 public class PathList {
 	private Destination head;
 	private Destination tail;
 	private int count =0;
-	
+
 	private class Destination{
 		private String latitude;	//위도, 33~43
 		private String longtitude;	//경도,	124~132
 		private String destName;	//여행지 이름
+		private ArrayList<Double> lengths;
 		
 		//다음 노드를 가리킴
 		private Destination next;	// 다음 여행지 정보
@@ -18,8 +20,17 @@ public class PathList {
 			this.destName = destName;
 			this.latitude = latitude;
 			this.longtitude = longtitude;
+			this.lengths = new ArrayList<Double>();
 		}
 		
+		//Constructor
+		Destination(String destName, String latitude, String longtitude, ArrayList<Double> lengths){
+			this.next = null;
+			this.destName = destName;
+			this.latitude = latitude;
+			this.longtitude = longtitude;
+			this.lengths = lengths;
+		}
 	}
 	
 	//출발지 노드 추가
@@ -81,6 +92,19 @@ public class PathList {
 		}
 	}
 	
+	public void addDestination(int number, Destination dest) {
+		
+		Destination temp1 = createDestination(number-2);
+		Destination temp2 = temp1.next;
+		
+		Destination newDestination = new Destination(dest.destName, dest.latitude, dest.longtitude, dest.lengths);
+		temp1.next = newDestination;
+		newDestination.next = temp2;
+		if(temp2 == null)
+			tail = newDestination;
+		count++;
+	}
+	
 	//여행 경로 출력
 	public void printTravelRoute() {
 		if(head == null)
@@ -133,8 +157,12 @@ public class PathList {
 		return count;
 	}
 	
+	public Destination getDestination(int number) {
+		Destination dest = createDestination(number);
+		return dest;
+	}
 	//몇번째 방문할 여행지가 무엇인지 얻기
-	public Object getDestinationName(int number) {
+	public String getDestinationName(int number) {
 		//Destination dest = createDestination(number-1);
 		Destination dest = createDestination(number);
 		return dest.destName;
@@ -165,4 +193,41 @@ public class PathList {
 		}
 		return order;
 	}
+
+	public void newArrayList(int num) {
+		
+		Destination dest = head;
+		
+		
+		for(int i=0; i<num; i++) {
+			dest = dest.next;
+		}
+		
+		dest.lengths = new ArrayList<Double>();
+	}
+	
+	public void setLength(int num, double length, int index) {
+		Destination dest = head;
+	
+		for(int i=0; i<num; i++) {
+			dest = dest.next;
+		}
+		//0번째부터 저장
+		dest.lengths.add(length);
+		
+		//	System.out.println(num + "->" + (index) + ", length: " + dest.lengths[num].get(index));
+	}
+	
+	//index를 받아 destination의 다른 dest와의 거리를 담은 배열을 get한다
+	public ArrayList<Double> getLength(int num) {
+		Destination dest = head;
+		
+		for(int i=0; i<num; i++) {
+			dest = dest.next;
+		}
+		
+		return dest.lengths;
+	}
+	
+
 }
