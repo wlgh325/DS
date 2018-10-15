@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-
 public class PathList {
 	private Destination head;
 	private Destination tail;
@@ -9,7 +7,8 @@ public class PathList {
 		private String latitude;	//위도, 33~43
 		private String longtitude;	//경도,	124~132
 		private String destName;	//여행지 이름
-		private ArrayList<Double> lengths;
+		private double[] lengths;
+		private boolean visit;
 		
 		//다음 노드를 가리킴
 		private Destination next;	// 다음 여행지 정보
@@ -20,17 +19,19 @@ public class PathList {
 			this.destName = destName;
 			this.latitude = latitude;
 			this.longtitude = longtitude;
-			this.lengths = new ArrayList<Double>();
+			this.lengths = new double[JsonParser.MAX_CONTENTS];
+			this.visit = false;
 		}
 		
 		//Constructor
-		Destination(String destName, String latitude, String longtitude, ArrayList<Double> lengths){
-			this.next = null;
-			this.destName = destName;
-			this.latitude = latitude;
-			this.longtitude = longtitude;
-			this.lengths = lengths;
-		}
+		Destination(String destName, String latitude, String longtitude, double[] lengths, boolean visit){
+				this.next = null;
+				this.destName = destName;
+				this.latitude = latitude;
+				this.longtitude = longtitude;
+				this.lengths = lengths;
+				this.visit= visit;
+			}
 	}
 	
 	//출발지 노드 추가
@@ -97,7 +98,7 @@ public class PathList {
 		Destination temp1 = createDestination(number-2);
 		Destination temp2 = temp1.next;
 		
-		Destination newDestination = new Destination(dest.destName, dest.latitude, dest.longtitude, dest.lengths);
+		Destination newDestination = new Destination(dest.destName, dest.latitude, dest.longtitude, dest.lengths, dest.visit);
 		temp1.next = newDestination;
 		newDestination.next = temp2;
 		if(temp2 == null)
@@ -194,32 +195,32 @@ public class PathList {
 		return order;
 	}
 
-	public void newArrayList(int num) {
-		
-		Destination dest = head;
-		
-		
-		for(int i=0; i<num; i++) {
-			dest = dest.next;
-		}
-		
-		dest.lengths = new ArrayList<Double>();
-	}
-	
 	public void setLength(int num, double length, int index) {
 		Destination dest = head;
 	
+		
 		for(int i=0; i<num; i++) {
 			dest = dest.next;
 		}
+
 		//0번째부터 저장
-		dest.lengths.add(length);
+		dest.lengths[index]=length;
 		
 		//	System.out.println(num + "->" + (index) + ", length: " + dest.lengths[num].get(index));
 	}
 	
-	//index를 받아 destination의 다른 dest와의 거리를 담은 배열을 get한다
-	public ArrayList<Double> getLength(int num) {
+	public void initialLength(int num) {
+		Destination dest = head;
+	
+		
+		for(int i=0; i<num; i++) {
+			dest = dest.next;
+		}
+		
+		dest.lengths = new double[JsonParser.MAX_CONTENTS];
+	}
+	
+	public double[] getLength(int num) {
 		Destination dest = head;
 		
 		for(int i=0; i<num; i++) {
@@ -228,6 +229,34 @@ public class PathList {
 		
 		return dest.lengths;
 	}
-	
 
+	public void setVisit(int num) {
+		Destination dest = head;
+		
+		for(int i=0; i<num; i++) {
+			dest = dest.next;
+		}
+		
+		dest.visit =true;
+	}
+	
+	public boolean getVisit(int num) {
+		Destination dest = head;
+		
+		for(int i=0; i<num; i++) {
+			dest = dest.next;
+		}
+		
+		return dest.visit;
+	}
+	
+	public void initialVisit(int num) {
+		Destination dest = head;
+	
+		
+		for(int i=0; i<num; i++) {
+			dest = dest.next;
+		}
+		dest.visit = false;
+	}
 }

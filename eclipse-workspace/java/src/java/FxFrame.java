@@ -129,12 +129,11 @@ public class FxFrame extends Application{
 		printRoute.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+            	for(int i=0; i<pathlist.getcount() -1 ; i++)
+    				pathlist.initialVisit(i);
+    			
             	Algorithm algorithm = new Algorithm(pathlist);
             	
-            	//해당 dest에서 모든 dest에 해당하는 거리 구하기
-            	for(int i=0; i<pathlist.getcount(); i++) {
-            		algorithm.cal_distance(i);
-            	}
             	algorithm.optimumRoute();
             	
             	PrintMap printmap = new PrintMap(pathlist);
