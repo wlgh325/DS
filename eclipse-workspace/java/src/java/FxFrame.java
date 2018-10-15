@@ -129,10 +129,12 @@ public class FxFrame extends Application{
 		printRoute.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-            	for(int i=0; i<pathlist.getcount() -1 ; i++)
-    				pathlist.initialVisit(i);
-    			
             	Algorithm algorithm = new Algorithm(pathlist);
+            	
+            	for(int i=0; i<pathlist.getcount() -1 ; i++) {
+    				algorithm.cal_distance(i);
+            	}
+
             	
             	algorithm.optimumRoute();
             	

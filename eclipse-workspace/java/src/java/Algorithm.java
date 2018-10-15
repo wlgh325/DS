@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public class Algorithm {
 	
 	private PathList pathlist;
@@ -5,14 +7,25 @@ public class Algorithm {
 	public final int nearKm=25;
 	private int pathnum;
 	final int INF = 100000;
+	static int check;
+	private ArrayList<Integer>[] permu;
+	private int fact;
+	
 	//0번이 start_destination
 	//마지막 index가 final_destination
 	
 	Algorithm(PathList pathlist){
 		this.pathlist = pathlist;
 		this.nearEndpoint= new boolean[JsonParser.MAX_CONTENTS];	//default : false
-		nearEndpoint();
 		this.pathnum = pathlist.getcount();
+		
+		this.fact = fact(pathnum-2);
+		permu = new ArrayList[this.fact];
+		
+		for (int i=0; i < this.fact; i++) {
+			permu[i] = new ArrayList<Integer>();
+		}
+
 	}
 	
 	public void cal_distance(int num) {
@@ -21,7 +34,7 @@ public class Algorithm {
 		
 		pathlist.initialLength(num);
 		
-		for(int i=num; i<pathnum-1; i++) {
+		for(int i=0; i<pathnum; i++) {
 		
 			//자기자신은 제외
 			if(num == i) 
@@ -48,78 +61,94 @@ public class Algorithm {
 		
 	}
 	
+	
+	//모든 경로를 탐색하여 최단 거리를 찾는다
 	public void optimumRoute() {
-		for(int i=0; i<this.pathnum-2; i++) {
-			cal_distance(i);
-
-			int min_index = closeDestination(i);
-			
-			if(min_index == 0)
-				break;
-			
-			pathlist.addDestination(i+2, pathlist.getDestination(min_index));
-			pathlist.delete(min_index+2);
-			pathlist.printTravelRoute();
-			
-			
+		double sum = 0.0;
+		double[] temp;
+		int[] arr = new int[pathnum-2];
+		double min=100000;
+		ArrayList<Integer> path = new ArrayList<Integer>();	//최단 경로일때 경로를 담은 배열
+		int i,j, k;
+		
+		check=0;
+		for(i =0 ; i<pathnum-2; i++) {
+			arr[i]=i+1;
 		}
+		
+		perm(arr, 0,pathnum-2,pathnum-2);
+	
+		//모든 경로 탐색
+		for(i=0; i<fact; i++) {
+			temp = pathlist.getLength(0);
+			for(j=0; j<pathnum-2; j++) {
+				sum = sum + temp[permu[i].get(j)];
+				temp = pathlist.getLength(permu[i].get(j));
+			}
+			sum+= temp[pathnum-1];
+
+			if(min > sum) {
+				min = sum;
+				path = permu[i];
+			}
+			sum=0;
+		}
+		
+		System.out.println(min + " km");
+		
+		for(i=0, k=0; i<pathnum -2; i++, k++) {
+			pathlist.addDestination(i+1, pathlist.getDestination(path.get(i) +k));
+			pathlist.printTravelRoute();
+		}
+		for(i=pathnum + path.size(), j=path.size(); j>0; i--, j--) {
+			pathlist.delete(i-1);
+			pathlist.printTravelRoute();
+		}
+		
+		
+		
 	}
 	
-	public int closeDestination(int index) {
-		double[] temp;
-		double min=0;
-		int min_index=0;
-		
-		
-		temp = pathlist.getLength(index);
-		min = INF;
-		
-		for(int i=0; i<pathnum -1; i++) {	
-			System.out.println("test" + i + ": " + temp[i]);
-			
-			if(temp[i] != 0 && pathlist.getVisit(i) == false) {
-				if(min > temp[i]) {
-					min = temp[i];
-					min_index= i;
-				}
+	public void perm(int[] arr, int depth, int n, int k) { 
+		if (depth == k) { // 한번 depth 가 k로 도달하면 사이클이 돌았음. 출력함. 
+			print(arr,k); 
+			return; 
+			} 
+		for (int i = depth; i < n; i++) { 
+			swap(arr, i, depth); 
+			perm(arr, depth + 1, n, k); 
+			swap(arr, i, depth); 
+			} 
+		} 
+	   
+	// 자바에서는 포인터가 없기 때문에 아래와 같이, 인덱스 i와 j를 통해 바꿔줌. 
+	public void swap(int[] arr, int i, int j) {       
+		int temp = arr[i]; 
+		arr[i] = arr[j]; 
+		arr[j] = temp; 
+	}
+	   
+	public void print (int[] arr, int k) {
+		for(int i=0; i<k; i++) {
+			if(i==k -1) {
+				permu[check].add(arr[i]);
+				//System.out.println(arr[i]);
+			}
+	        else {
+				permu[check].add(arr[i]);
+				//System.out.print(arr[i] + ",");
 			}
 		}
-		
-		pathlist.setVisit(min_index);
-		System.out.println(min_index + ":" + min);
-		
-		return min_index;
+		check++;
 	}
-	
-	//25km이내를 가까운 거리로 판단
-	//end_point 근처를 판단해서 index를 저장해둔다
-	//end_point 근처의 destination은 end_point에서 방문한다
-	public void nearEndpoint() {
-		double final_latitude = Double.parseDouble(pathlist.getDestinationLat(pathlist.getcount()-1));	//도착지 latitude
-		double final_longtitude = Double.parseDouble(pathlist.getDestinationLon(pathlist.getcount()-1));	//도착지 longtitude
-		
-		//출발지, 도착지를 제외한 나머지 Destination에 대해서
-		//25km내는 가깝다고 판단!
-		for(int i=1; i<pathlist.getcount(); i++) {
-			double latitude = Double.parseDouble(pathlist.getDestinationLat(i));
-			double longtitude = Double.parseDouble(pathlist.getDestinationLon(i));
-			
-			double theta = final_longtitude - longtitude;
-			double dist = Math.sin(deg2rad(final_latitude)) * Math.sin(deg2rad(latitude)) + 
-					Math.cos(deg2rad(final_latitude)) * Math.cos(deg2rad(latitude)) * Math.cos(deg2rad(theta));
-			
-			dist = Math.acos(dist);
-			dist = rad2deg(dist);
-			dist = dist * 60 * 1.1515;
-			
-			//kilometer
-			dist = Math.round(dist * 1.609344 * 1000)/ 1000.0;	//셋째자리 까지 반올림하여 표시
-			
-			if(dist < this.nearKm) 
-				this.nearEndpoint[i] = true;
-		}
+
+	public int fact(int n) {
+		if (n <= 1)
+			return n;
+		else 
+			return fact(n-1) * n;
+
 	}
-	
 	
 	//라디안으로 바꿔주기
 	public double deg2rad(double deg) {

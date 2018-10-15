@@ -8,7 +8,6 @@ public class PathList {
 		private String longtitude;	//경도,	124~132
 		private String destName;	//여행지 이름
 		private double[] lengths;
-		private boolean visit;
 		
 		//다음 노드를 가리킴
 		private Destination next;	// 다음 여행지 정보
@@ -20,17 +19,15 @@ public class PathList {
 			this.latitude = latitude;
 			this.longtitude = longtitude;
 			this.lengths = new double[JsonParser.MAX_CONTENTS];
-			this.visit = false;
 		}
 		
 		//Constructor
-		Destination(String destName, String latitude, String longtitude, double[] lengths, boolean visit){
+		Destination(String destName, String latitude, String longtitude, double[] lengths){
 				this.next = null;
 				this.destName = destName;
 				this.latitude = latitude;
 				this.longtitude = longtitude;
 				this.lengths = lengths;
-				this.visit= visit;
 			}
 	}
 	
@@ -95,10 +92,10 @@ public class PathList {
 	
 	public void addDestination(int number, Destination dest) {
 		
-		Destination temp1 = createDestination(number-2);
+		Destination temp1 = createDestination(number-1);
 		Destination temp2 = temp1.next;
 		
-		Destination newDestination = new Destination(dest.destName, dest.latitude, dest.longtitude, dest.lengths, dest.visit);
+		Destination newDestination = new Destination(dest.destName, dest.latitude, dest.longtitude, dest.lengths);
 		temp1.next = newDestination;
 		newDestination.next = temp2;
 		if(temp2 == null)
@@ -228,35 +225,5 @@ public class PathList {
 		}
 		
 		return dest.lengths;
-	}
-
-	public void setVisit(int num) {
-		Destination dest = head;
-		
-		for(int i=0; i<num; i++) {
-			dest = dest.next;
-		}
-		
-		dest.visit =true;
-	}
-	
-	public boolean getVisit(int num) {
-		Destination dest = head;
-		
-		for(int i=0; i<num; i++) {
-			dest = dest.next;
-		}
-		
-		return dest.visit;
-	}
-	
-	public void initialVisit(int num) {
-		Destination dest = head;
-	
-		
-		for(int i=0; i<num; i++) {
-			dest = dest.next;
-		}
-		dest.visit = false;
 	}
 }
