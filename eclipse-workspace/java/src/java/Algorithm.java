@@ -1,7 +1,6 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -101,46 +100,12 @@ public class Algorithm {
 		
 		JSONObject tmp3 = (JSONObject)tmp2.get("properties");
 		
-		String str = tmp3.get("totalDistance").toString();
-		double dist = Double.parseDouble(str) / 1000.0;
+		String str = tmp3.get("totalTime").toString();
+		double dist = Double.parseDouble(str);
 		
 		System.out.println(num + " -> " + i + " : " + dist);
 		pathlist.setLength(num, dist, i);	
 	}
-	
-	public void cal_distance(int num) {
-		double cal_latitude = Double.parseDouble(pathlist.getDestinationLat(num));
-		double cal_longtitude = Double.parseDouble(pathlist.getDestinationLon(num));
-		
-		pathlist.initialLength(num);
-		
-		for(int i=0; i<pathnum; i++) {
-		
-			//자기자신은 제외
-			if(num == i) 
-				continue;
-			
-			double latitude = Double.parseDouble(pathlist.getDestinationLat(i));
-			double longtitude = Double.parseDouble(pathlist.getDestinationLon(i));
-			
-			double theta = cal_longtitude - longtitude;
-			double dist = Math.sin(deg2rad(cal_latitude)) * Math.sin(deg2rad(latitude)) + 
-					Math.cos(deg2rad(cal_latitude)) * Math.cos(deg2rad(latitude)) * Math.cos(deg2rad(theta));
-			
-			dist = Math.acos(dist);
-			dist = rad2deg(dist);
-			dist = dist * 60 * 1.1515;
-			
-			//kilometer	
-			dist = Math.round(dist * 1.609344 * 1000)/ 1000.0;	//셋째자리 까지 반올림하여 표시
-			
-			System.out.println(num + " -> " + i + " : " + dist);
-			//pathlist.setLength(num, dist);
-			pathlist.setLength(num, dist, i);
-		}
-		
-	}
-	
 	
 	//모든 경로를 탐색하여 최단 거리를 찾는다
 	public void optimumRoute() {
@@ -174,7 +139,7 @@ public class Algorithm {
 			sum=0;
 		}
 		
-		System.out.println(min + " km");
+		System.out.println(Math.round(min/60*10)/10.0 + " 분");
 		
 		for(i=0, k=0; i<pathnum -2; i++, k++) {
 			pathlist.addDestination(i+1, pathlist.getDestination(path.get(i) +k));
