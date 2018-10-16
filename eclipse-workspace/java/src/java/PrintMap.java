@@ -21,7 +21,7 @@ public class PrintMap{
 		writer.write("    <meta charset=\"utf-8\">\r\n");
 		writer.write("</head>\r\n");
 		writer.write("<body>\r\n");
-		writer.write("<div id=\"map\" style=\"width:100%;height:350px;\"></div>    \r\n");
+		writer.write("<div id=\"map\" style=\"width:100%;height:400px;\"></div>    \r\n");
 		writer.write("<script type=\"text/javascript\" src=\"//dapi.kakao.com/v2/maps/sdk.js?appkey=");
 		writer.write(key + "\"></script>\r\n");
 		writer.write("<script>\r\n\r\n");

@@ -131,13 +131,16 @@ public class FxFrame extends Application{
             public void handle(ActionEvent event) {
             	Algorithm algorithm = new Algorithm(pathlist);
             	
-            	for(int i=0; i<pathlist.getcount() -1 ; i++) {
-    				algorithm.cal_distance(i);
+            	for(int i=0; i<pathlist.getcount()-1; i++) {
+            		try {
+    					algorithm.realtimeDistance(i);
+    				} catch (IOException e1) {
+    					e1.printStackTrace();
+    				}
             	}
-
+            	
             	
             	algorithm.optimumRoute();
-            	
             	PrintMap printmap = new PrintMap(pathlist);
 
             	try {
@@ -146,7 +149,7 @@ public class FxFrame extends Application{
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				
+			
             }
         });
 		

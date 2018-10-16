@@ -114,6 +114,8 @@ public class JsonParser {
 		}
 	}
 	
+		
+	
 	//Get Method
 	public String[] getTitle() {
 		return searchContents;

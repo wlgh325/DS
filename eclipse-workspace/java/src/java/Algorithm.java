@@ -1,22 +1,33 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 public class Algorithm {
 	
 	private PathList pathlist;
-	private boolean[] nearEndpoint;
 	public final int nearKm=25;
 	private int pathnum;
 	final int INF = 100000;
 	static int check;
 	private ArrayList<Integer>[] permu;
 	private int fact;
+	private String jsonString;
 	
 	//0번이 start_destination
 	//마지막 index가 final_destination
 	
 	Algorithm(PathList pathlist){
 		this.pathlist = pathlist;
-		this.nearEndpoint= new boolean[JsonParser.MAX_CONTENTS];	//default : false
 		this.pathnum = pathlist.getcount();
 		
 		this.fact = fact(pathnum-2);
@@ -26,6 +37,75 @@ public class Algorithm {
 			permu[i] = new ArrayList<Integer>();
 		}
 
+	}
+	
+	public void realtimeDistance(int num) throws IOException {
+        String appKey = "16a77aea-dbaa-4ddb-9b0a-355fcb924a58";	//appKey
+    	String startX = URLEncoder.encode(pathlist.getDestinationLon(num), "UTF-8");
+    	String startY = URLEncoder.encode(pathlist.getDestinationLat(num), "UTF-8");
+
+        for(int i=0; i<pathnum; i++) {    
+	        try {
+	        	if(i == num)
+	        		continue;
+	        	
+	        	String endX = URLEncoder.encode(pathlist.getDestinationLon(i), "UTF-8");
+	        	String endY = URLEncoder.encode(pathlist.getDestinationLat(i), "UTF-8");
+	        	
+	            String apiURL = "https://api2.sktelecom.com/tmap/routes?version=1&callback=application/json&appKey=" + appKey 
+	            		+ "&endX=" + endX + "&endY=" + endY + "&startX=" + startX + "&startY=" + startY + "&totalValue=2"; // json 결과
+	            URL url = new URL(apiURL);
+	            
+	            HttpURLConnection con = (HttpURLConnection)url.openConnection();
+	            con.setRequestMethod("GET");
+	            
+	            
+	            int responseCode = con.getResponseCode();	//응답코드 200이면 정상
+	            String str;
+	            
+	            if(responseCode==200) { // 정상 호출
+	            	InputStreamReader tmp = new InputStreamReader(con.getInputStream(), "UTF-8");
+	            	BufferedReader reader = new BufferedReader(tmp);
+	            	StringBuffer buffer = new StringBuffer();
+	            	while((str = reader.readLine()) != null){
+	            		str = FxFrame.removeHTML(str);
+	            		buffer.append(str).append("\n");
+	            	}
+	            	
+	            	String jsonString = buffer.toString();
+	            	//System.out.println(jsonString);
+	            	this.jsonString = jsonString;
+	            	Parsing(num, i);
+	            	
+	              	reader.close();
+	            } else {  // 에러 발생
+	            	System.out.println(con.getResponseCode());
+	            }
+	            
+	        } catch (Exception e) {
+	            System.out.println(e);
+	        }
+		}
+	}
+
+
+	//검색된 정보들 parsing
+	public void Parsing(int num, int i) throws ParseException {
+		JSONParser parser = new JSONParser();
+		//json 형태로 parse
+		JSONObject item = (JSONObject)parser.parse(jsonString);
+		//item 하나씩 json에 담기
+		
+		JSONArray tmp = (JSONArray)item.get("features");
+		JSONObject tmp2 = (JSONObject)tmp.get(0);
+		
+		JSONObject tmp3 = (JSONObject)tmp2.get("properties");
+		
+		String str = tmp3.get("totalDistance").toString();
+		double dist = Double.parseDouble(str) / 1000.0;
+		
+		System.out.println(num + " -> " + i + " : " + dist);
+		pathlist.setLength(num, dist, i);	
 	}
 	
 	public void cal_distance(int num) {
