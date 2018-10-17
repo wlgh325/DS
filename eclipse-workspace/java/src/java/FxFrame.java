@@ -133,7 +133,7 @@ public class FxFrame extends Application{
             	
             	for(int i=0; i<pathlist.getcount()-1; i++) {
             		try {
-    					algorithm.realtimeDistance(i);
+    					algorithm.cal_time(i);
     				} catch (IOException e1) {
     					e1.printStackTrace();
     				}
@@ -207,6 +207,7 @@ public class FxFrame extends Application{
             int responseCode = con.getResponseCode();	//응답코드 200이면 정상
             String str;
             
+            Thread.sleep(100);
             if(responseCode==200) { // 정상 호출
             	InputStreamReader tmp = new InputStreamReader(con.getInputStream(), "UTF-8");
             	BufferedReader reader = new BufferedReader(tmp);

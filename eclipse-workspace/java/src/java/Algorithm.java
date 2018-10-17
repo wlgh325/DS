@@ -38,7 +38,7 @@ public class Algorithm {
 
 	}
 	
-	public void realtimeDistance(int num) throws IOException {
+	public void cal_time(int num) throws IOException {
         String appKey = "16a77aea-dbaa-4ddb-9b0a-355fcb924a58";	//appKey
     	String startX = URLEncoder.encode(pathlist.getDestinationLon(num), "UTF-8");
     	String startY = URLEncoder.encode(pathlist.getDestinationLat(num), "UTF-8");
@@ -62,6 +62,7 @@ public class Algorithm {
 	            int responseCode = con.getResponseCode();	//응답코드 200이면 정상
 	            String str;
 	            
+	            Thread.sleep(500);
 	            if(responseCode==200) { // 정상 호출
 	            	InputStreamReader tmp = new InputStreamReader(con.getInputStream(), "UTF-8");
 	            	BufferedReader reader = new BufferedReader(tmp);
@@ -104,7 +105,7 @@ public class Algorithm {
 		double dist = Double.parseDouble(str);
 		
 		System.out.println(num + " -> " + i + " : " + dist);
-		pathlist.setLength(num, dist, i);	
+		pathlist.setTime(num, dist, i);	
 	}
 	
 	//모든 경로를 탐색하여 최단 거리를 찾는다
@@ -125,10 +126,10 @@ public class Algorithm {
 	
 		//모든 경로 탐색
 		for(i=0; i<fact; i++) {
-			temp = pathlist.getLength(0);
+			temp = pathlist.getTime(0);
 			for(j=0; j<pathnum-2; j++) {
 				sum = sum + temp[permu[i].get(j)];
-				temp = pathlist.getLength(permu[i].get(j));
+				temp = pathlist.getTime(permu[i].get(j));
 			}
 			sum+= temp[pathnum-1];
 
@@ -195,13 +196,4 @@ public class Algorithm {
 
 	}
 	
-	//라디안으로 바꿔주기
-	public double deg2rad(double deg) {
-		return (deg * Math.PI / 180.0);
-	}
-	
-	//라디안을 일반 각도로 바꿔주기
-	public double rad2deg(double rad) {
-		return (rad * 180 / Math.PI);
-	}
 }

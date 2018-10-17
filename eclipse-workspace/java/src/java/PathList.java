@@ -7,7 +7,7 @@ public class PathList {
 		private String latitude;	//위도, 33~43
 		private String longtitude;	//경도,	124~132
 		private String destName;	//여행지 이름
-		private double[] lengths;
+		private double[] time;
 		
 		//다음 노드를 가리킴
 		private Destination next;	// 다음 여행지 정보
@@ -18,16 +18,16 @@ public class PathList {
 			this.destName = destName;
 			this.latitude = latitude;
 			this.longtitude = longtitude;
-			this.lengths = new double[JsonParser.MAX_CONTENTS];
+			this.time = new double[JsonParser.MAX_CONTENTS];
 		}
 		
 		//Constructor
-		Destination(String destName, String latitude, String longtitude, double[] lengths){
+		Destination(String destName, String latitude, String longtitude, double[] time){
 				this.next = null;
 				this.destName = destName;
 				this.latitude = latitude;
 				this.longtitude = longtitude;
-				this.lengths = lengths;
+				this.time = time;
 			}
 	}
 	
@@ -95,7 +95,7 @@ public class PathList {
 		Destination temp1 = createDestination(number-1);
 		Destination temp2 = temp1.next;
 		
-		Destination newDestination = new Destination(dest.destName, dest.latitude, dest.longtitude, dest.lengths);
+		Destination newDestination = new Destination(dest.destName, dest.latitude, dest.longtitude, dest.time);
 		temp1.next = newDestination;
 		newDestination.next = temp2;
 		if(temp2 == null)
@@ -192,7 +192,7 @@ public class PathList {
 		return order;
 	}
 
-	public void setLength(int num, double length, int index) {
+	public void setTime(int num, double length, int index) {
 		Destination dest = head;
 	
 		
@@ -201,12 +201,12 @@ public class PathList {
 		}
 
 		//0번째부터 저장
-		dest.lengths[index]=length;
+		dest.time[index]=length;
 		
-		//	System.out.println(num + "->" + (index) + ", length: " + dest.lengths[num].get(index));
+		//	System.out.println(num + "->" + (index) + ", length: " + dest.time[num].get(index));
 	}
 	
-	public void initialLength(int num) {
+	public void initialTime(int num) {
 		Destination dest = head;
 	
 		
@@ -214,16 +214,16 @@ public class PathList {
 			dest = dest.next;
 		}
 		
-		dest.lengths = new double[JsonParser.MAX_CONTENTS];
+		dest.time = new double[JsonParser.MAX_CONTENTS];
 	}
 	
-	public double[] getLength(int num) {
+	public double[] getTime(int num) {
 		Destination dest = head;
 		
 		for(int i=0; i<num; i++) {
 			dest = dest.next;
 		}
 		
-		return dest.lengths;
+		return dest.time;
 	}
 }

@@ -89,6 +89,7 @@ public class JsonParser {
 	            int responseCode = con.getResponseCode();	//응답코드 200이면 정상
 	            String str;
 	            
+	            Thread.sleep(100);
 	            if(responseCode==200) { // 정상 호출
 	            	InputStreamReader tmp = new InputStreamReader(con.getInputStream(), "UTF-8");
 	            	BufferedReader reader = new BufferedReader(tmp);
