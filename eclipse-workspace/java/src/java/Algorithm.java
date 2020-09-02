@@ -22,8 +22,8 @@ public class Algorithm {
 	private int fact;
 	private String jsonString;
 	
-	//0¹øÀÌ start_destination
-	//¸¶Áö¸· index°¡ final_destination
+	//0ë²ˆì´ start_destination
+	//ë§ˆì§€ë§‰ indexê°€ final_destination
 	
 	Algorithm(PathList pathlist){
 		this.pathlist = pathlist;
@@ -39,7 +39,7 @@ public class Algorithm {
 	}
 	
 	public void cal_time(int num) throws IOException {
-        String appKey = "16a77aea-dbaa-4ddb-9b0a-355fcb924a58";	//appKey
+        String appKey = "appkey";	//appKey
     	String startX = URLEncoder.encode(pathlist.getDestinationLon(num), "UTF-8");
     	String startY = URLEncoder.encode(pathlist.getDestinationLat(num), "UTF-8");
 
@@ -52,18 +52,18 @@ public class Algorithm {
 	        	String endY = URLEncoder.encode(pathlist.getDestinationLat(i), "UTF-8");
 	        	
 	            String apiURL = "https://api2.sktelecom.com/tmap/routes?version=1&callback=application/json&appKey=" + appKey 
-	            		+ "&endX=" + endX + "&endY=" + endY + "&startX=" + startX + "&startY=" + startY + "&totalValue=2"; // json °á°ú
+	            		+ "&endX=" + endX + "&endY=" + endY + "&startX=" + startX + "&startY=" + startY + "&totalValue=2"; // json ê²°ê³¼
 	            URL url = new URL(apiURL);
 	            
 	            HttpURLConnection con = (HttpURLConnection)url.openConnection();
 	            con.setRequestMethod("GET");
 	            
 	            
-	            int responseCode = con.getResponseCode();	//ÀÀ´äÄÚµå 200ÀÌ¸é Á¤»ó
+	            int responseCode = con.getResponseCode();	//ì‘ë‹µì½”ë“œ 200ì´ë©´ ì •ìƒ
 	            String str;
 	            
 	            Thread.sleep(500);
-	            if(responseCode==200) { // Á¤»ó È£Ãâ
+	            if(responseCode==200) { // ì •ìƒ í˜¸ì¶œ
 	            	InputStreamReader tmp = new InputStreamReader(con.getInputStream(), "UTF-8");
 	            	BufferedReader reader = new BufferedReader(tmp);
 	            	StringBuffer buffer = new StringBuffer();
@@ -78,7 +78,7 @@ public class Algorithm {
 	            	Parsing(num, i);
 	            	
 	              	reader.close();
-	            } else {  // ¿¡·¯ ¹ß»ı
+	            } else {  // ì—ëŸ¬ ë°œìƒ
 	            	System.out.println(con.getResponseCode());
 	            }
 	            
@@ -89,12 +89,12 @@ public class Algorithm {
 	}
 
 
-	//°Ë»öµÈ Á¤º¸µé parsing
+	//ê²€ìƒ‰ëœ ì •ë³´ë“¤ parsing
 	public void Parsing(int num, int i) throws ParseException {
 		JSONParser parser = new JSONParser();
-		//json ÇüÅÂ·Î parse
+		//json í˜•íƒœë¡œ parse
 		JSONObject item = (JSONObject)parser.parse(jsonString);
-		//item ÇÏ³ª¾¿ json¿¡ ´ã±â
+		//item í•˜ë‚˜ì”© jsonì— ë‹´ê¸°
 		
 		JSONArray tmp = (JSONArray)item.get("features");
 		JSONObject tmp2 = (JSONObject)tmp.get(0);
@@ -108,13 +108,13 @@ public class Algorithm {
 		pathlist.setTime(num, dist, i);	
 	}
 	
-	//¸ğµç °æ·Î¸¦ Å½»öÇÏ¿© ÃÖ´Ü °Å¸®¸¦ Ã£´Â´Ù
+	//ëª¨ë“  ê²½ë¡œë¥¼ íƒìƒ‰í•˜ì—¬ ìµœë‹¨ ê±°ë¦¬ë¥¼ ì°¾ëŠ”ë‹¤
 	public void optimumRoute() {
 		double sum = 0.0;
 		double[] temp;
 		int[] arr = new int[pathnum-2];
 		double min=100000;
-		ArrayList<Integer> path = new ArrayList<Integer>();	//ÃÖ´Ü °æ·ÎÀÏ¶§ °æ·Î¸¦ ´ãÀº ¹è¿­
+		ArrayList<Integer> path = new ArrayList<Integer>();	//ìµœë‹¨ ê²½ë¡œì¼ë•Œ ê²½ë¡œë¥¼ ë‹´ì€ ë°°ì—´
 		int i,j, k;
 		
 		check=0;
@@ -124,7 +124,7 @@ public class Algorithm {
 		
 		perm(arr, 0,pathnum-2,pathnum-2);
 	
-		//¸ğµç °æ·Î Å½»ö
+		//ëª¨ë“  ê²½ë¡œ íƒìƒ‰
 		for(i=0; i<fact; i++) {
 			temp = pathlist.getTime(0);
 			for(j=0; j<pathnum-2; j++) {
@@ -140,7 +140,7 @@ public class Algorithm {
 			sum=0;
 		}
 		
-		System.out.println(Math.round(min/60*10)/10.0 + " ºĞ");
+		System.out.println(Math.round(min/60*10)/10.0 + " ë¶„");
 		
 		for(i=0, k=0; i<pathnum -2; i++, k++) {
 			pathlist.addDestination(i+1, pathlist.getDestination(path.get(i) +k));
@@ -156,7 +156,7 @@ public class Algorithm {
 	}
 	
 	public void perm(int[] arr, int depth, int n, int k) { 
-		if (depth == k) { // ÇÑ¹ø depth °¡ k·Î µµ´ŞÇÏ¸é »çÀÌÅ¬ÀÌ µ¹¾ÒÀ½. Ãâ·ÂÇÔ. 
+		if (depth == k) { // í•œë²ˆ depth ê°€ kë¡œ ë„ë‹¬í•˜ë©´ ì‚¬ì´í´ì´ ëŒì•˜ìŒ. ì¶œë ¥í•¨. 
 			print(arr,k); 
 			return; 
 			} 
@@ -167,7 +167,7 @@ public class Algorithm {
 			} 
 		} 
 	   
-	// ÀÚ¹Ù¿¡¼­´Â Æ÷ÀÎÅÍ°¡ ¾ø±â ¶§¹®¿¡ ¾Æ·¡¿Í °°ÀÌ, ÀÎµ¦½º i¿Í j¸¦ ÅëÇØ ¹Ù²ãÁÜ. 
+	// ìë°”ì—ì„œëŠ” í¬ì¸í„°ê°€ ì—†ê¸° ë•Œë¬¸ì— ì•„ë˜ì™€ ê°™ì´, ì¸ë±ìŠ¤ iì™€ jë¥¼ í†µí•´ ë°”ê¿”ì¤Œ. 
 	public void swap(int[] arr, int i, int j) {       
 		int temp = arr[i]; 
 		arr[i] = arr[j]; 
